@@ -46,7 +46,7 @@ class Robot(object):
         else:
             # TODO 2. Update parameters when learning
             if self.epsilon > 0.0:
-                self.epsilon = self.epsilon - 0.0001
+                self.epsilon = self.epsilon - 0.001
             else:
                 self.epsilon = 0.0
         return self.epsilon
@@ -68,15 +68,12 @@ class Robot(object):
         # Qtable[state] ={'u':xx, 'd':xx, ...}
         # If Qtable[state] already exits, then do
         # not change it.
-        if state in self.Qtable:
-            if self.Qtable[state]:
-                pass
-            else:
-                for action in self.valid_actions:
-                    self.Qtable[state][action] = 0.0
+        if state in self.Qtable.keys():
+            pass
         else:
             self.Qtable[state] = {}
-            self.create_Qtable_line(state)
+            for action in self.valid_actions:
+                    self.Qtable[state][action] = 0.0
 
     def choose_action(self):
         """
@@ -87,11 +84,7 @@ class Robot(object):
             # TODO 5. Return whether do random choice
             # hint: generate a random number, and compare
             # it with epsilon
-            random_math = random.randint(1, 100)/100.0
-            if self.epsilon >= random_math:
-                return True
-            else:
-                return False
+            return random.random() < self.epsilon
 
         if self.learning:
             random_int = is_random_exploration()
@@ -116,12 +109,10 @@ class Robot(object):
         Update the qtable according to the given rule.
         """
         if self.learning:
-            max_action = max(self.Qtable[next_state], key=self.Qtable[next_state].get)
-            self.Qtable[self.state][action] = (1-self.alpha)* self.Qtable[self.state][action] + self.alpha * (r + self.gamma * self.Qtable[next_state][max_action])
+            self.Qtable[self.state][action] = (1-self.alpha)* self.Qtable[self.state][action] + self.alpha * (r + self.gamma * max(self.Qtable[next_state].values()))
             self.state = next_state
             # TODO 8. When learning, update the q table according
             # to the given rules
-            #print('self.Qtable=',self.Qtable)
             #print('__________________________________________')
 
     def update(self):
