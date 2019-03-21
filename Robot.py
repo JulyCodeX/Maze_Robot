@@ -40,15 +40,17 @@ class Robot(object):
         Some of the paramters of the q learning robot can be altered,
         update these parameters when necessary.
         """
+        self.t += 1
         if self.testing:
             # TODO 1. No random choice when testing
             self.epsilon = 0.0
         else:
             # TODO 2. Update parameters when learning
-            if self.epsilon > 0.0:
-                self.epsilon = self.epsilon - 0.001
-            else:
-                self.epsilon = 0.0
+            self.epsilon = self.epsilon * (0.998 ** self.t)
+            #if self.epsilon > 0.0:
+                #self.epsilon = self.epsilon - 0.001
+            #else:
+            #    self.epsilon = 0.0
         return self.epsilon
 
     def sense_state(self):
@@ -71,9 +73,7 @@ class Robot(object):
         if state in self.Qtable.keys():
             pass
         else:
-            self.Qtable[state] = {}
-            for action in self.valid_actions:
-                    self.Qtable[state][action] = 0.0
+            self.Qtable.setdefault(state, { a:0.0 for a in self.valid_actions })
 
     def choose_action(self):
         """
